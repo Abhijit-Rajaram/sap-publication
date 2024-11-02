@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Registration</title>
+    
+    <link rel="stylesheet" type="text/css" href="{% static 'css\bootstrap.min.css' %}">
+</head>
+<body>
+
+    <div class="container mt-md-5 pt-md-5">
+        <div class="row text-center">
+            <div class="col">
+                <h1 class="text-success">User Registration</h1>
+            </div>
+        </div>
+        <div class="row text-center">
+            <div class="col">
+                <form method="post">
+            {% csrf_token %}
+            <div class="row">
+
+                <label for="username">Username:</label>
+                <input type="text" id="username"  class="form-control" name="username" required><br><br>
+                <div id="username-response"></div>
+            </div>
+            <div class="row">
+
+                <label for="first_name">First Name:</label>
+                <input type="text" id="first_name"  class="form-control"name="first_name" required><br><br>
+            </div>
+            <div class="row">
+                <label for="last_name">Last Name:</label>
+                <input type="text" id="last_name" class="form-control" name="last_name" required><br><br>
+            </div>
+            <div class="row">
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" class="form-control" name="email" required><br><br>
+                </div>
+                <div class="row">
+                    <label for="phone_number">Phone Number:</label>
+                    <input type="text" id="phone_number" class="form-control" name="phone_number" required><br><br>
+                </div>
+                <div class="row">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" class="form-control" name="password" required><br><br>
+                </div>
+            <input type="submit" class="btn btn-success px-4 my-4" value="Registration">
+            </form>
+            </div>
+            
+        </div>
+        <div class="row text-center">
+            <div class="col">
+                <p>Already have an account<a href="{% url 'login' %}">Login</a></p>
+            </div>
+        </div>
+            
+        
+</div>
+</body>
+
+<script type="text/javascript" src="{% static 'js/jquery-2.1.0.min.js' %}"></script>
+<script>
+    $(document).ready(function() {
+        $('#username').on('keyup', function() {
+            var username = $(this).val(); // Get the value of the input field
+
+            $.ajax({
+                type: 'POST',
+                url: '/app/check_username/', // URL of the Django view
+                data: {
+                    'username': username,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}' // Include CSRF token for security
+                },
+                success: function(response) {
+                    if(response['status']){
+                        $('#username-response').text('userdifferent')
+                    }else {
+                        $('#username-response').text('')
+                    }
+                },
+            });
+        });
+    });
+</script>
+</html>

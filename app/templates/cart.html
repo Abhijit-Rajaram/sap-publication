@@ -1,0 +1,219 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/font-awesome.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/templatemo-hexashop.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/owl-carousel.css' %}">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/lightbox.css' %}">
+
+
+</head>
+
+{% comment %} {% for item in cart %}
+<div>
+    <span>{{item.book.title}}</span>
+    <img src="{{ item.book.img.url }}" alt="{{ item.book.title }}" width="370px" height="390px">
+    <span>
+        <span onclick="changeValue('-','{{item.id}}')">minus</span>
+        <input type="text" class="w-25" value="{{item.quantity}}" id="quantity">
+        <span onclick="changeValue('+','{{item.id}}')">plus</span>
+    </span>
+    <button onclick="remove_cart('{{item.id}}')">Delete</button>
+</div>
+{% endfor %} {% endcomment %}
+<style>
+    .quantity {
+        background-color: inherit;
+        border: none;
+    }
+</style>
+<header class="header-area header-sticky">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="main-nav">
+                    <!-- ***** Logo Start ***** -->
+                    <a href="{% url 'mainhome' %}" class="logo">
+                        <img src="{% static 'images/Booklogo.jpeg' %}" alt="logo" class="image-fluid" width="50px"
+                            height="50px">
+                        {% comment %} <img src="assets/images/Booklogo.jpeg" alt="logo" class="image-fluid" width="50px"
+                            height="50px"> {% endcomment %}
+                    </a>
+                    <!-- ***** Logo End ***** -->
+                    <!-- ***** Menu Start ***** -->
+                    <ul class="nav">
+                        <li class="scroll-to-section"><a href="{% url 'mainhome' %}" class="active">Home</a></li>
+                        {% comment %} <li class="scroll-to-section"><a href="#men">c1</a></li>
+                        <li class="scroll-to-section"><a href="#women">c2</a></li>
+                        <li class="scroll-to-section"><a href="#kids">c3</a></li> {% endcomment %}
+                        <li class="scroll-to-section"><a href="{% url 'cart' %}">
+                                <i class="fa fa-shopping-cart" aria-hidden="true"></i> Cart
+                                {% comment %} {% if request.user.is_authenticated %} {% endcomment %}
+                                ({{ count}})
+                                {% comment %} {% endif %} {% endcomment %}
+                            </a></li>
+                        {% comment %} <li class="submenu">
+                            <a href="javascript:;">Pages</a>
+                            <ul>
+                                <li><a href="about.html">About Us</a></li>
+                                <li><a href="products.html">Products</a></li>
+                                <li><a href="single-product.html">Single Product</a></li>
+                                <li><a href="contact.html">Contact Us</a></li>
+                            </ul>
+                        </li>
+                        <li class="submenu">
+                            <a href="javascript:;">Features</a>
+                            <ul>
+                                <li><a href="#">Features Page 1</a></li>
+                                <li><a href="#">Features Page 2</a></li>
+                                <li><a href="#">Features Page 3</a></li>
+                                <li><a rel="nofollow" href="https://templatemo.com/page/4" target="_blank">Template Page
+                                        4</a></li>
+                            </ul>
+                        </li> {% endcomment %}
+                        {% comment %} <li class="scroll-to-section"><a href="#explore">Explore</a></li> {% endcomment %}
+                        <li class=""><a href="{% url 'logout' %}">Logout</a></li>
+                    </ul>
+                    <a class='menu-trigger'>
+                        <span>Menu</span>
+                    </a>
+                    <!-- ***** Menu End ***** -->
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col">
+            <h1>Cart</h1>
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>Select</th>
+                        <th>Book Title</th>
+                        <th>image</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Subtotal</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart %}
+                    <tr>
+                        <td><input type="checkbox" class="get-checkek-cart" name="select-check-box" value="{{item.id}}"></td>
+                        <td>{{ item.book.title }}</td>
+                        <td><img src="{{ item.book.img.url }}" alt="{{ item.book.title }}" width="50px" height="50px">
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-primary"
+                                onclick="changeValue('-','{{item.id }}',this,'{{ item.book.price }}')">-</button>
+                            <input type="text" class="w-25 quantity text-center" value="{{ item.quantity }}" readonly>
+                            <button class="btn btn-sm btn-primary"
+                                onclick="changeValue('+','{{item.id }}',this,'{{ item.book.price }}')">+</button>
+                        </td>
+                        <td>{{ item.book.price }}</td>
+                        <td class='total'>{{item.total_price}}</td>
+                        {% comment %} <td>{{ item.book.price }} *{{ item.quantity }}</td> {% endcomment %}
+                        <td><button class="btn btn-sm btn-danger" onclick="remove_cart('{{item.id}}')">Delete</button>
+                        </td>
+                        {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <button class="btn btn-success" onclick="buyAll()">BUY ALL</button>
+</div>
+
+</body>
+<script type="text/javascript" src="{%  static 'js\jquery.min.js' %}"></script>
+<!-- <script type="text/javascript" src="{%  static 'js\jquery-ui.min.js' %}"></script>
+<script type="text/javascript" src="{%  static 'js\popper.min.js' %}"></script> -->
+<script type="text/javascript" src="{%  static 'js\bootstrap.min.js' %}"></script>
+<script>
+    function buyAll(){
+        checkbox = document.getElementsByClassName('get-checkek-cart')
+        data = []
+        for (let i = 0; i < checkbox.length; i++) {
+            const element = checkbox[i];
+            if (element.checked) {
+                data.push(element.value)
+            }
+            console.log('data : ',data)
+        }
+        console.log()
+    }
+</script>
+<script>
+    function changeValue(sign, id, element, price) {
+
+        console.log(sign, id, $(element).parent().children().eq(1).val(), price, $(element).parent().parent().find('.total'))
+        ele = $(element).parent().children().eq(1)
+        quantity = ele.val()
+
+        if (sign == '-') {
+            if (quantity > 0) {
+                quantity = parseInt(quantity) - 1
+                $(element).parent().parent().find('.total').text(quantity * parseFloat(price))
+                console.log()
+
+            } else {
+                alert("quantity can't be less than 0");
+                return
+            }
+        } else {
+            quantity = parseInt(quantity) + 1
+            $(element).parent().parent().find('.total').text(quantity * parseFloat(price))
+        }
+
+
+        $(element).parent().children().eq(1).val(quantity)
+
+        $.ajax({
+            type: "POST",
+            url: "/app/addQuantity/",
+            data: {
+                'id': id,
+                'quantity': quantity,
+                'csrfmiddlewaretoken': '{{csrf_token}}'
+            },
+            success: function (response) {
+                console.log(response);
+            }
+        });
+    }
+</script>
+<script>
+    function remove_cart(id) {
+        console.log(id)
+        $.ajax({
+            type: "POST",
+            url: "/app/addQuantity/",
+            data: {
+                'id': id,
+                'key': 'delete',
+                'csrfmiddlewaretoken': '{{csrf_token}}'
+            },
+            success: function (response) {
+                location.reload();
+                console.log(response);
+            }
+        });
+    }
+</script>
+
+</html>

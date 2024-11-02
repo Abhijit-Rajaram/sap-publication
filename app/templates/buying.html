@@ -1,0 +1,200 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/font-awesome.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/templatemo-hexashop.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/owl-carousel.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/lightbox.css' %}">
+    
+    <link rel="stylesheet" type="text/css" href="{% static 'css\bootstrap.min.css' %}">
+</head>
+<body>
+    <style>
+        .quantity{
+            background-color: inherit;
+            border:none;
+        }
+    </style>
+    <header class="header-area header-sticky">
+        <div class="mx-5">
+            <div class="row">
+                <div class="col-12">
+                    <nav class="main-nav">
+                        <!-- ***** Logo Start ***** -->
+                        <a href="{% url 'mainhome' %}" class="logo">
+                            <img src="{% static 'images/Booklogo.jpeg' %}" alt="logo" class="image-fluid" width="50px" height="50px">
+                            {% comment %} <img src="assets/images/Booklogo.jpeg" alt="logo" class="image-fluid" width="50px" height="50px"> {% endcomment %}
+                        </a>
+                        <!-- ***** Logo End ***** -->
+                        <!-- ***** Menu Start ***** -->
+                        <ul class="nav">
+                            <li class="scroll-to-section"><a href="{% url 'mainhome' %}" class="active">Home</a></li>
+                            {% comment %} <li class="scroll-to-section"><a href="#men">c1</a></li>
+                            <li class="scroll-to-section"><a href="#women">c2</a></li>
+                            <li class="scroll-to-section"><a href="#kids">c3</a></li> {% endcomment %}
+                            <li class="scroll-to-section"><a href="{% url 'cart' %}">
+                                <i class="fa fa-shopping-cart" aria-hidden="true"></i> Cart
+                                {% comment %} {% if request.user.is_authenticated %} {% endcomment %}
+                                ({{ count}})
+                                {% comment %} {% endif %} {% endcomment %}
+                                </a></li>
+                            {% comment %} <li class="submenu">
+                                <a href="javascript:;">Pages</a>
+                                <ul>
+                                    <li><a href="about.html">About Us</a></li>
+                                    <li><a href="products.html">Products</a></li>
+                                    <li><a href="single-product.html">Single Product</a></li>
+                                    <li><a href="contact.html">Contact Us</a></li>
+                                </ul>
+                            </li>
+                            <li class="submenu">
+                                <a href="javascript:;">Features</a>
+                                <ul>
+                                    <li><a href="#">Features Page 1</a></li>
+                                    <li><a href="#">Features Page 2</a></li>
+                                    <li><a href="#">Features Page 3</a></li>
+                                    <li><a rel="nofollow" href="https://templatemo.com/page/4" target="_blank">Template Page 4</a></li>
+                                </ul>
+                            </li> {% endcomment %}
+                            {% comment %} <li class="scroll-to-section"><a href="#explore">Explore</a></li> {% endcomment %}
+                            <li class=""><a href="{% url 'logout' %}">Logout</a></li>
+                        </ul>        
+                        <a class='menu-trigger'>
+                            <span>Menu</span>
+                        </a>
+                        <!-- ***** Menu End ***** -->
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="mt-5 p-5"></div>
+    <div class="row mx-auto" style="width: 90%">
+        <div class="col-sm-6 p-5">
+            <img src="{{book.img.url}}" class="card-img-top" alt="..." width=500px height="500px">
+        </div>
+        <div class="col-sm-6">
+            <div class="row">
+                <h3 class="mt-5">{{book.title}}</h4>
+            </div>
+            <div class="row">
+                <h5 class="text-muted">{{book.author}}</h5>
+            </div>
+            <div class="row h-25 mb-5">
+                <span class="">{{book.description}}</span>
+            </div>
+            
+            <h2>₹{{book.price}}</h2>
+            <div class="row d-flex">
+                <button class="btn btn-sm btn-primary" onclick="changeValue('-','{{ book.price }}')">-</button>
+                                    <input type="number" class="w-25 quantity text-center" value="0" readonly id="quantity">
+                                    <button class="btn btn-sm btn-primary" onclick="changeValue('+','{{ book.price }}')">+</button>
+                                    <div class=" mx-5" id="total"></div>
+            </div>
+            
+                                    
+            <div class="row mt-5 ml-1">
+                <button class=" btn btn btn-primary px-5" onclick="buying()">buy</button>
+                <button class="mx-5 btn btn btn-success px-5" onclick="addToCart('{{book.isbn}}')" id="add-to-cart">Add to Cart</button>
+                </div>
+                                    
+        </div>
+    </div>
+   
+
+    <script src="{% static 'js/buying.js' %}"></script>
+
+</body>
+<script type="text/javascript" src="{%  static 'js\jquery.min.js' %}"></script>
+<!-- <script type="text/javascript" src="{%  static 'js\jquery-ui.min.js' %}"></script>
+<script type="text/javascript" src="{%  static 'js\popper.min.js' %}"></script> -->
+<script type="text/javascript" src="{%  static 'js\bootstrap.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/swal.js' %}"></script>
+<script>
+    function buying(){
+        quantity = document.getElementById('quantity').value
+        
+        $.ajax({
+            type: "POST",
+            url: "/app/buyBookPage/{{book.isbn}}/",
+            data: {
+                'quantity': parseInt(quantity),
+                'csrfmiddlewaretoken': '{{csrf_token}}'
+            },
+            success: function (response) {
+                console.log(response);
+                Swal.fire({
+                    title: "Good job!",
+                    text: "Your order Submitted Successfully",
+                    icon: "success"
+                  });
+            }
+        });
+    }
+</script>
+<script>
+    function changeValue(sign,price) {
+
+        console.log(sign,price)
+        ele = $('#quantity')
+        quantity = ele.val()
+        quantity=parseInt(quantity)
+            if (sign == '-') {
+                console.log('negative')
+                if (quantity > 0){
+                    quantity = quantity - 1
+                    ele.val(quantity)
+                    total = quantity * parseFloat(price)
+                    $('#total').text('₹'+total)
+                console.log(parseFloat(price),quantity)
+                
+            }else{
+                alert("quantity can't be less than 0");
+                return
+            }
+            } else {
+                console.log('positive')
+                quantity = quantity + 1
+                ele.val(quantity)
+                total = quantity * parseFloat(price)
+                $('#total').text('₹'+total)
+            }
+       
+    }
+</script>
+<script>
+    function addToCart(isbn){
+        console.log(isbn)
+        $.ajax({
+            type: "POST",
+            url: "/app/cart/",
+            data: {
+                'isbn': isbn,
+                'quantity': document.getElementById('quantity').value,
+                'csrfmiddlewaretoken': '{{csrf_token}}'
+            },
+            success: function (response) {
+                console.log(response['status']);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: response['status'],
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            }
+        });
+        return false;
+    }
+        
+</script>
+</html>

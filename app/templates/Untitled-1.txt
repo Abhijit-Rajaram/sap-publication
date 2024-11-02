@@ -1,0 +1,6 @@
+
+              <td><a href="/app/buying/{{data.id}}/">Buy</a></td>
+              <td><a href="/app/carting/{{data.id}}/">Buy</a></td>
+
+
+              

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order</title>
+</head>
+<body>
+    {{orderitem}}
+
+    {% for data in orderitem %}
+    <div>
+        <span>Total :{{data.order.total_price}}</span>
+    </div>
+    <ul>
+    {% for product in data.orderitem %}
+        <li>{{product.book.title}} - {{product.quantity}} - {{product.price}}</li>
+    {% endfor %}
+    </ul>
+    {% endfor %}
+</body>
+</html>
