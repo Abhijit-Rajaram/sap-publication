@@ -1,0 +1,127 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Registration</title>
+    
+    <link rel="stylesheet" type="text/css" href="{% static 'css\bootstrap.min.css' %}">
+</head>
+<body>
+
+{% if admin %}
+    <div class="row my-2">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-4">content1</div>
+                <div class="col-md-4">content1</div>
+                <div class="col-md-4">content1</div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>S.no</th>
+                        <th>Order id</th>
+                        <th>Books * Quantity</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="unshipped_order">
+                    {% for i in unshipped_order %}
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td>{{i.id}}</td>
+                        <td>
+                            <ul>
+                                {% for j in i.orderitem %}
+                                    <li>{{j.book.title}} * {{j.quantity}}</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                        <td>{{i.total_price |floatformat:2}}</td>
+                        <td><button class="btn btn-primary">shipped</button></td>
+                    </tr>
+                    
+                    {% endfor %}
+                </tbody>
+                <tbody id="undelivered_order">
+                    {% for i in undelivered_order %}
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td>{{i.id}}</td>
+                        <td>
+                            <ul>
+                                {% for j in i.orderitem %}
+                                    <li>{{j.book.title}} * {{j.quantity}}</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                        <td>{{i.total_price |floatformat:2}}</td>
+                        <td><button class="btn btn-primary">Delivered</button></td>
+                    </tr>
+                    
+                    {% endfor %}
+                </tbody>
+                <tbody id="delivered_order">
+                    {% for i in delivered_order %}
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td>{{i.id}}</td>
+                        <td>
+                            <ul>
+                                {% for j in i.orderitem %}
+                                    <li>{{j.book.title}} * {{j.quantity}}</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                        <td>{{i.total_price |floatformat:2}}</td>
+                        <td>Delivered</td>
+                    </tr>
+                    
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% else %}
+
+<div class="col-md-12">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>S.no</th>
+                <th>Order id</th>
+                <th>Books * Quantity</th>
+                <th>Amount</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="unshipped_order">
+            {% for i in order %}
+            <tr>
+                <td>{{forloop.counter}}</td>
+                <td>{{i.id}}</td>
+                <td>
+                    <ul>
+                        {% for j in i.orderitem %}
+                            <li>{{j.book.title}} * {{j.quantity}}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+                <td>{{i.total_price |floatformat:2}}</td>
+                
+            </tr>
+            
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+</body>
+</html>

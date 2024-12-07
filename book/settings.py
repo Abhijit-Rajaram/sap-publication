@@ -80,12 +80,12 @@ WSGI_APPLICATION = 'book.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
@@ -96,12 +96,12 @@ WSGI_APPLICATION = 'book.wsgi.application'
 #         'PORT': str(os.getenv('PORT')),                 # Default PostgreSQL port
 #     }
 # }
-DATABASES = {
-    'default': dj_database_url.config(
-        default=str(os.getenv('DATABASE_URL')),
-        conn_max_age=600
-    )
-}
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         default=str(os.getenv('DATABASE_URL')),
+#         conn_max_age=600
+#     )
+# }
 
 
 

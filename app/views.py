@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from app.models import *
 from django.http import HttpResponse,JsonResponse, HttpResponseRedirect
 from django.contrib.auth.hashers import make_password, check_password
@@ -7,8 +6,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib import messages
-from django.db.models import F, FloatField, ExpressionWrapper
-from django.db.models import Q
+from django.db.models import F, FloatField, ExpressionWrapper, Q
+from django.contrib.auth.decorators import login_required
+
 
 def register(request):
     if request.method == 'POST':
@@ -33,13 +33,7 @@ def register(request):
             messages.error(request, f'Error registering user: {e}')
     return render(request, 'registration.html')
 
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login,logout
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 
-from django.contrib.auth import logout
-from django.shortcuts import redirect
 
 def user_logout(request):
     logout(request)
@@ -332,79 +326,6 @@ def searchbar(request):
     return JsonResponse(book_list,safe=False)
 
 
-# views.py
-import razorpay
-from django.conf import settings
-from django.views.decorators.csrf import csrf_exempt
-
-@csrf_exempt
-@login_required
-def buy(request):
-    if request.method == 'POST':
-        isbn = request.POST.get('isbn')
-        quantity = int(request.POST.get('quantity'))
-        book = Book.objects.get(isbn=isbn)
-        total_amount = int(book.price) * quantity
-
-        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
-        payment_data = {
-            'amount': total_amount * 100,  # Amount in paisa
-            'currency': 'INR',
-            'receipt': f'order_{request.user.id}_{isbn}_{quantity}',  # Unique order ID
-            'payment_capture': 1  # Auto capture payment
-        }
-        try:
-            # Create Razorpay order
-            razorpay_order = client.order.create(data=payment_data)
-            order_id = razorpay_order['id']
-
-            # Save order details in session
-            request.session['razorpay_order_id'] = order_id
-            request.session['total_amount'] = total_amount
-
-            # Render Razorpay payment form
-            return render(request, 'payment.html', {'razorpay_order_id': order_id, 'total_amount': total_amount})
-        except Exception as e:
-            messages.error(request, f'Error initiating payment: {e}')
-    
-    # Handle GET request or if payment initiation fails
-    return redirect('cart')
-
-# views.py
-from django.views.decorators.csrf import csrf_exempt
-
-@csrf_exempt
-@login_required
-def payment_success(request):
-    if request.method == 'POST':
-        razorpay_order_id = request.session.get('razorpay_order_id')
-        razorpay_payment_id = request.POST.get('razorpay_payment_id')
-        razorpay_signature = request.POST.get('razorpay_signature')
-        total_amount = request.session.get('total_amount')
-
-        # Verify the payment signature (security check)
-        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
-        params_dict = {
-            'razorpay_order_id': razorpay_order_id,
-            'razorpay_payment_id': razorpay_payment_id,
-            'razorpay_signature': razorpay_signature
-        }
-        try:
-            client.utility.verify_payment_signature(params_dict)
-            # Payment is successful, update your database or process the order here
-            # Example: Mark the order as paid
-            # order = Order.objects.get(id=your_order_id)
-            # order.paid = True
-            # order.save()
-
-            messages.success(request, 'Payment successful!')
-            return redirect('order_success')  # Redirect to a success page
-        except Exception as e:
-            messages.error(request, f'Error verifying payment: {str(e)}')
-    
-    # Handle GET request or if payment verification fails
-    return redirect('cart')
-
 def check_username(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -412,3 +333,52 @@ def check_username(request):
         if User.objects.filter(username=username).exists():
             status = True
         return JsonResponse({'status':status})
+    
+def order_status(request):
+    TEMPLATE, USER = 'order_status.html', request.user
+    if request.method == 'POST':
+        pass
+    else:
+        if USER.is_superuser:
+            unshipped_order =  Order.objects.filter(is_shipped=False).values('id','total_price')
+            undelivered_order =  Order.objects.filter(is_shipped=True,is_delivered=False).values('id','total_price')
+            deliverd_order =  Order.objects.filter(is_delivered=True).values('id','total_price')            
+            unshipped_orderList = []
+            undelivered_orderList = []
+            deliverd_orderList = []
+
+            for i in unshipped_order:
+                unshipped_orderList.append({
+                    'order':i,
+                    'orderitem':OrderItem.objects.filter(order_id=i['id']).all()
+                })
+
+            for i in undelivered_order:
+                undelivered_orderList.append({
+                    'order':i,
+                    'orderitem':OrderItem.objects.filter(order_id=i['id']).all()
+                })
+            
+            for i in deliverd_order:
+                deliverd_orderList.append({
+                    'order':i,
+                    'orderitem':OrderItem.objects.filter(order_id=i['id']).all()
+                })
+            context = {
+                'unshipped_order' : unshipped_orderList,
+                'undelivered_order' : undelivered_orderList,
+                'deliverd_order' : deliverd_orderList
+            }
+        else:
+            order = Order.objects.filter(user_id = request.user.id)
+            data = []
+            for i in order:
+                data.append({
+                    'order':i,
+                    'orderitem':OrderItem.objects.filter(order=i)
+                })
+            context = {
+                'order' : data
+            }
+        print(context)
+        return render(request, TEMPLATE,context)

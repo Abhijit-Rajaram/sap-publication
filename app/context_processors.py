@@ -12,7 +12,12 @@ def user_info(request):
         count = CartItem.objects.filter(user_id = request.user.id).count()
     except:
         count = 0
+    try:
+        admin = True if user.is_superuser else False
+    except:
+        admin = False
     return {
         'user': user,
         'count': count,
+        'admin': admin
     }

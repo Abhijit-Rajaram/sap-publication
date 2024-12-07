@@ -9,6 +9,7 @@ urlpatterns = [
 
     # admin page to add books and category
     path('add_book/', views.add_book, name='add_book'),
+    path('order_status/', views.order_status, name='order_status'),
     # home page
     path('home/', views.home, name='home'),
     path('mainhome/', views.mainhome, name='mainhome'),
@@ -27,5 +28,5 @@ urlpatterns = [
     path('searchbar/', views.searchbar, name='searchbar'),
     path('check_username/', views.check_username, name='check_username'),
 # path('payment/', views.payment, name='payment'),
-    path('payment/success/', views.payment_success, name='payment_success'),
+    # path('payment/success/', views.payment_success, name='payment_success'),
 ]
